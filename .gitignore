@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.DS_Store
+debug_outputs/
+orca_inp_from_xyz/
+orca_dataset.xlsx
+*.xlsx

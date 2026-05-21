@@ -3,9 +3,13 @@ from itertools import product
 COMMON_DEFAULTS={
     "opt": False,
     "freq": False,
+
     "functional": "HF",
-    "basis": "sto-3g",
+    "basis": "STO-3G",
+
     "solvent": None,
+    "solvent_model": "CPCM",
+
     "grid": None,
     "extra_keywords": "",
 
@@ -76,7 +80,7 @@ def build_orca_keywords(job):
         parts.append("FREQ")
 
     if job["solvent"] is not None:
-        parts.append(f"CPCM({job['solvent']})")
+        parts.append(f"{job['solvent_model']}({job['solvent']})")
     if job["grid"] is not None:
         parts.append(job["grid"])
     if job["extra_keywords"]:

@@ -4,7 +4,6 @@ from aiida.orm import SinglefileData, Dict
 from orca_jobs.orca_job_settings import build_orca_keywords
 
 from orca_parsers.orca_parser_gs import parse_orca_output
-from datetime import datetime
 import time
 
 ws_header=[
@@ -13,6 +12,7 @@ ws_header=[
     "functional",
     "basis",
     "solvent",
+    "solvent_model",
     "grid",
     "extra_keywords",
     "tddft",
@@ -77,6 +77,7 @@ def run_orca(input_filename,molecule,job,charge,multiplicity,debug_folder,orca_e
     parsed_output["functional"] = job["functional"]
     parsed_output["basis"] = job["basis"]
     parsed_output["solvent"] = job["solvent"]
+    parsed_output["solvent_model"] = job["solvent_model"]
     parsed_output["grid"] = job["grid"]
     parsed_output["extra_keywords"] = job["extra_keywords"]
     parsed_output["tddft"] = job["tddft"]

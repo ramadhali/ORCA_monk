@@ -4,7 +4,7 @@ from aiida import load_profile
 from runtime_config import ORCA_EXECUTABLE, check_environment
 from orca_jobs.orca_job_settings import make_jobs,DEFAULT_SP,DEFAULT_OPT,DEFAULT_FREQ,DEFAULT_OPT_FREQ
 
-from orca_aiida_runner import run_orca,ws_header
+from orca_aiida_runner import run_orca,ORCA_DATASET_FIELDS
 from orca_io.xyz_to_orca_inp import xyz_to_orca_inp
 from itertools import product
 
@@ -15,7 +15,7 @@ from itertools import product
 # =======================
 job_templates=[DEFAULT_SP,DEFAULT_OPT,DEFAULT_FREQ,DEFAULT_OPT_FREQ]     
 
-functionals=["PBE0","B3LYP"]          # ["HF","B3LYP", "CAM-B3LYP"]
+functionals=["PBE0"]          # ["HF","B3LYP", "CAM-B3LYP"]
 basis_sets=["sto-3g"]         # ["def2-svp", "sto-3g", "def2-tzvp"]
 
 
@@ -59,8 +59,9 @@ check_environment()
 
 wb=Workbook()
 ws=wb.active
-ws.append(ws_header)
+ws.append(ORCA_DATASET_FIELDS)
 ws.auto_filter.ref = ws.dimensions
+
 
 
 for xyz_file,job,charge,multiplicity in product(
@@ -68,14 +69,13 @@ for xyz_file,job,charge,multiplicity in product(
     jobs,
     charges,
     multiplicities,
-
 ):
     inp_file=xyz_to_orca_inp(xyz_file,
                           orca_inp_folder,
                           job,
                           charge,multiplicity,)
-    node,properties=run_orca(inp_file,xyz_file.stem,job,charge,multiplicity,debug_folder,ORCA_EXECUTABLE)
+    node,properties=run_orca(inp_file,xyz_file.stem,job,charge,multiplicity,debug_folder,ORCA_EXECUTABLE,verbose=False)
     data=properties.get_dict()
-    ws.append([data.get(h) for h in ws_header])
+    ws.append([data.get(h) for h in ORCA_DATASET_FIELDS])
     wb.save("orca_dataset.xlsx")
     print(f"Updated orca_dataset.xlsx for {xyz_file}")

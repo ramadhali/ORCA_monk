@@ -1,4 +1,5 @@
 from pathlib import Path
+from orca_io.xyz_parser import read_xyz
 from orca_jobs.orca_job_settings import build_orca_keywords, build_orca_optional_blocks
 
 
@@ -12,9 +13,8 @@ def xyz_to_orca_inp(xyz_file,output_folder,job,charge,multiplicity):
     optional_blocks=build_orca_optional_blocks(job) #the optional block
     label=job.label
 
-    lines=xyz_file.read_text().splitlines()
-    natoms=int(lines[0])
-    atom_lines=lines[2:2+natoms]
+    xyz_data=read_xyz(xyz_file)
+    atoms = xyz_data["atoms"]
 
     out_file=output_folder/f"{xyz_file.stem}_{label}_q{charge}_m{multiplicity}.inp"   # .stem makes to take input file without extention (.xyz)
     with open(out_file,"w") as f:
@@ -25,10 +25,13 @@ def xyz_to_orca_inp(xyz_file,output_folder,job,charge,multiplicity):
 
         f.write(f"* xyz {charge} {multiplicity}\n")
 
-        for line in atom_lines:
-            parts=line.split()
-            element=parts[0]
-            x,y,z=parts[1],parts[2],parts[3]
-            f.write(f"{element:2s} {x} {y} {z}\n")
+        for atom_coord in atoms:
+            atom=atom_coord.atom
+            f.write(
+                f"{atom.symbol:2s} "
+                f"{atom_coord.x} "
+                f"{atom_coord.y} "
+                f"{atom_coord.z} \n"
+            )
         f.write("*\n")
     return out_file

@@ -15,6 +15,7 @@ Modular ORCA + AiiDA workflow framework for quantum chemistry automation
 ## Current Structure
 
 ```text
+
 orca_io/	# ORCA input generation from .xyz to .inp
 orca_jobs/	# ORCA job templates/settings (SP, OPT, FREQ, OPT_FREQ)
 orca_parsers/	# ORCA output parsers (SCF, HOMO/LUMO, freq, thermochemistry)
@@ -44,13 +45,15 @@ orca_jobs/orca_job_settings.py
 
 Current templates include:
 
-- DEFAULT_SP					(HF/STO-3G)
-- DEFAULT_OPT				(HF/STO-3G)
-- DEFAULT_FREQ				(HF/STO-3G)
-- DEFAULT_OPT_FREQ			(HF/STO-3G)
-- DEFAULT_TDDFT				(CAM-B3LYP/def2-SVP/nroots=10)
-- DEFAULT_TDDFT_OPT			(CAM-B3LYP/def2-SVP/nroots=10)
-- DEFAULT_TDDFT_OPT_FREQ	(CAM-B3LYP/def2-SVP/nroots=10/iroot=1)
+| Template                   | Default Setting                      |
+| -------------------------- | ------------------------------------ |
+| `DEFAULT_SP`             | HF/STO-3G                            |
+| `DEFAULT_OPT`            | HF/STO-3G                            |
+| `DEFAULT_FREQ`           | HF/STO-3G                            |
+| `DEFAULT_OPT_FREQ`       | HF/STO-3G                            |
+| `DEFAULT_TDDFT`          | CAM-B3LYP/def2-SVP/nroots=10         |
+| `DEFAULT_TDDFT_OPT`      | CAM-B3LYP/def2-SVP/nroots=10         |
+| `DEFAULT_TDDFT_OPT_FREQ` | CAM-B3LYP/def2-SVP/nroots=10/iroot=1 |
 
 ### Changing Functional and Basis Set
 

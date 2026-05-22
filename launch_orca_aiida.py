@@ -39,12 +39,12 @@ for template in job_templates:
             basis_sets,
 
             # solvent="water",
-            # solvent_model="CPCM"
+            # solvent_model="CPCM",
             # grid="DFGRID3",
 
             nprocs=4, 
             maxcore=4000,
-
+            #
             #nroots=2,
             #iroot=1,
         )

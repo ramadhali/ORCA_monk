@@ -12,7 +12,7 @@ class OrcaJob:
     basis: str = "STO-3G"
 
     solvent: str | None = None
-    solvent_model: str | None = None
+    solvent_model: str = "CPCM"
 
     grid: str | None = None
     extra_keywords: str = ""
@@ -27,111 +27,98 @@ class OrcaJob:
 
 
 
-COMMON_DEFAULTS={
-    "opt": False,
-    "freq": False,
+DEFAULT_SP=OrcaJob(
+    label = "SP",
+)
 
-    "functional": "HF",
-    "basis": "STO-3G",
+DEFAULT_FREQ=OrcaJob(
+    label       = "FREQ",
+    freq        = True,
+)
 
-    "solvent": None,
-    "solvent_model": "CPCM",
+DEFAULT_OPT=OrcaJob(
+    label       = "OPT",
+    opt         = True,
+)
 
-    "grid": None,
-    "extra_keywords": "",
+DEFAULT_OPT_FREQ=OrcaJob(
+    **DEFAULT_OPT.__dict__,
+    label       = "OPT_FREQ",
+    freq        = True
+)
 
-    "tddft": False,
-    "nroots":10,
-    "iroot": None,
-
-    "nprocs": 1,
-    "maxcore": None,
-}
-
-DEFAULT_SP={
-    "label": "SP",
-}
-
-DEFAULT_FREQ={
-    "label": "FREQ",
-    "freq": True,
-}
-
-DEFAULT_OPT={
-    "label": "OPT",
-    "opt": True,
-}
-DEFAULT_OPT_FREQ={
-    **DEFAULT_OPT,
-    "label": "OPT_FREQ",
-    "freq": True
-}
-
-DEFAULT_TDDFT={
-    "tddft": True,
-    "label": "TDDFT",
-    "functional": "CAM-B3LYP",
-    "basis": "def2-SVP",
-}
+DEFAULT_TDDFT=OrcaJob(
+    label       = "TDDFT",
+    tddft       = True,
+    functional  = "CAM-B3LYP",
+    basis       = "def2-SVP",
+)
 
 
-DEFAULT_TDDFT_OPT={
-    **DEFAULT_TDDFT,
-    "label":"TDDFT_OPT",
+DEFAULT_TDDFT_OPT=OrcaJob(
+    **DEFAULT_TDDFT.__dict__,
+    label       = "TDDFT_OPT",
+    opt         = True,
+    iroot       = 1,
+)
 
-    "opt": True,
-    "iroot": 1,
-}
+DEFAULT_TDDFT_OPT_FREQ=OrcaJob(
+    **DEFAULT_TDDFT_OPT.__dict__,
+    label       = "TDDFT_OPT_FREQ",
+    freq        = True,
+)
 
-DEFAULT_TDDFT_OPT_FREQ={
-    **DEFAULT_TDDFT_OPT,
-    "label": "TDDFT_OPT_FREQ",
-    "freq": True,
-}
+def make_job(base_job: OrcaJob, **overrides):    # override by user input
+    return OrcaJob(
+        **{**base_job.__dict__, **overrides}
+    )
 
-def make_job(job_defaults,**overrides):
-    job=COMMON_DEFAULTS.copy()  #copy default
-    job.update(job_defaults)    #replace with SP/OPT if DEFAULT_SP/DEFAULT_OPT is choosen
-    job.update(overrides)       # replace with human input
-    return job
 
-def build_orca_keywords(job):
+def build_orca_keywords(job: OrcaJob):
     parts=[
-        job["functional"],
-        job["basis"],
+        job.functional,
+        job.basis,
     ]
 
-    if job["opt"]:
+    if job.opt:
         parts.append("OPT")
-    if job["freq"]:
+    if job.freq:
         parts.append("FREQ")
 
-    if job["solvent"] is not None:
-        parts.append(f"{job['solvent_model']}({job['solvent']})")
-    if job["grid"] is not None:
-        parts.append(job["grid"])
-    if job["extra_keywords"]:
-        parts.append(job["extra_keywords"])
+    if job.solvent is not None:
+        parts.append(f"{job.solvent_model}({job.solvent})")
+
+    if job.grid is not None:
+        parts.append(job.grid)
+
+    if job.extra_keywords:
+
+        parts.append(job.extra_keywords)
     return " ".join(parts)
 
 
-def build_orca_optional_blocks(job):
+def build_orca_optional_blocks(job: OrcaJob):
     blocks=[]
 
-    if job["maxcore"] is not None:
-        blocks.append(f"%maxcore {job['maxcore']}")
+    if job.maxcore is not None:
+        blocks.append(f"%maxcore {job.maxcore}")
     
-    if job["nprocs"] > 1:
-        blocks.append(f"%pal nprocs {job['nprocs']} end")
-    if job["tddft"]:
-        iroot_part=f" iroot {job['iroot']}" if job["iroot"] is not None else ""
-        blocks.append(f"%tddft nroots {job['nroots']}{iroot_part} end")
+    if job.nprocs > 1:
+        blocks.append(f"%pal nprocs {job.nprocs} end")
+    if job.tddft:
+        iroot_part=f" iroot {job.iroot}" if job.iroot is not None else ""
+        blocks.append(f"%tddft nroots {job.nroots}{iroot_part} end")
     return "\n".join(blocks)
 
-def make_jobs(job_template,functionals,basis_sets,**overrides):
+def make_jobs(base_job: OrcaJob,functionals,basis_sets,**overrides):
     jobs=[]
     for functional, basis in product(functionals,basis_sets):
-        job=make_job(job_template,functional=functional,basis=basis,**overrides)
+        job=make_job(
+            base_job,
+            functional=functional,
+            basis=basis,
+            **overrides
+        )
         jobs.append(job)
         
     return jobs

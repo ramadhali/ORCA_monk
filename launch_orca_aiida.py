@@ -31,7 +31,7 @@ debug_folder="debug_outputs"    # folder to save $input##.out
 # USER SETTINGS
 # =======================
 jobs=[]
-for template in job_templates:
+for base_job in job_templates:
     jobs.extend(
         make_jobs(
             base_job,

@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from itertools import product
 
 @dataclass
@@ -41,8 +41,8 @@ DEFAULT_OPT=OrcaJob(
     opt         = True,
 )
 
-DEFAULT_OPT_FREQ=OrcaJob(
-    **DEFAULT_OPT.__dict__,
+DEFAULT_OPT_FREQ=replace(
+    DEFAULT_OPT,
     label       = "OPT_FREQ",
     freq        = True
 )
@@ -55,17 +55,17 @@ DEFAULT_TDDFT=OrcaJob(
 )
 
 
-DEFAULT_TDDFT_OPT=OrcaJob(
-    **DEFAULT_TDDFT.__dict__,
+DEFAULT_TDDFT_OPT=replace(
+    DEFAULT_TDDFT,
     label       = "TDDFT_OPT",
     opt         = True,
     iroot       = 1,
 )
 
-DEFAULT_TDDFT_OPT_FREQ=OrcaJob(
-    **DEFAULT_TDDFT_OPT.__dict__,
-    label       = "TDDFT_OPT_FREQ",
-    freq        = True,
+DEFAULT_TDDFT_OPT_FREQ=replace(
+    DEFAULT_TDDFT_OPT,
+    label      = "TDDFT_OPT_FREQ",
+    freq       = True,
 )
 
 def make_job(base_job: OrcaJob, **overrides):    # override by user input

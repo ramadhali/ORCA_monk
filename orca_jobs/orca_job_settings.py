@@ -1,4 +1,31 @@
+from dataclasses import dataclass
 from itertools import product
+
+@dataclass
+class OrcaJob:
+    label: str = "SP"
+
+    opt: bool = False
+    freq: bool = False
+
+    functional: str = "HF"
+    basis: str = "STO-3G"
+
+    solvent: str | None = None
+    solvent_model: str | None = None
+
+    grid: str | None = None
+    extra_keywords: str = ""
+
+    tddft: bool = False
+    nroots: int = 10
+    iroot: int | None = None
+
+    nprocs: int = 1
+    maxcore: int | None = None
+
+
+
 
 COMMON_DEFAULTS={
     "opt": False,

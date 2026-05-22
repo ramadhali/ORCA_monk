@@ -1,7 +1,7 @@
 from pathlib import Path
 from aiida_shell import launch_shell_job
 from aiida.orm import SinglefileData, Dict
-from orca_jobs.orca_job_settings import build_orca_keywords
+from orca_jobs.orca_job_settings import OrcaJob, build_orca_keywords
 
 from orca_parsers.orca_parser_gs import parse_orca_output
 import time
@@ -40,7 +40,15 @@ ws_header=[
     "runtime_seconds",
 ]
 
-def run_orca(input_filename,molecule,job,charge,multiplicity,debug_folder,orca_executable):
+def run_orca(
+        input_filename,
+        molecule,
+        job: OrcaJob,
+        charge,
+        multiplicity,
+        debug_folder,
+        orca_executable
+    ):
     input_file=SinglefileData(file=Path(input_filename).resolve())
 
     #start time stamp
@@ -57,7 +65,7 @@ def run_orca(input_filename,molecule,job,charge,multiplicity,debug_folder,orca_e
     # end time
     runtime_seconds=time.time()-start_time
 
-    label = job["label"]
+    label = job.label
     orca_out_text=result["orca_out"].get_content()
 
     # save orca output file for debugging in folder
@@ -73,18 +81,18 @@ def run_orca(input_filename,molecule,job,charge,multiplicity,debug_folder,orca_e
     parsed_output=parse_orca_output(orca_out_text)
 
     parsed_output["molecule"] = molecule
-    parsed_output["label"] = job["label"]
-    parsed_output["functional"] = job["functional"]
-    parsed_output["basis"] = job["basis"]
-    parsed_output["solvent"] = job["solvent"]
-    parsed_output["solvent_model"] = job["solvent_model"]
-    parsed_output["grid"] = job["grid"]
-    parsed_output["extra_keywords"] = job["extra_keywords"]
-    parsed_output["tddft"] = job["tddft"]
-    parsed_output["nroots"] = job["nroots"]
-    parsed_output["iroot"] = job["iroot"]
-    parsed_output["nprocs"] = job["nprocs"]
-    parsed_output["maxcore"] = job["maxcore"]
+    parsed_output["label"] = job.label
+    parsed_output["functional"] = job.functional
+    parsed_output["basis"] = job.basis
+    parsed_output["solvent"] = job.solvent
+    parsed_output["solvent_model"] = job.solvent_model
+    parsed_output["grid"] = job.grid
+    parsed_output["extra_keywords"] = job.extra_keywords
+    parsed_output["tddft"] = job.tddft
+    parsed_output["nroots"] = job.nroots
+    parsed_output["iroot"] = job.iroot
+    parsed_output["nprocs"] = job.nprocs
+    parsed_output["maxcore"] = job.maxcore
     parsed_output["orca_keywords"] = build_orca_keywords(job)
     parsed_output["charge"] = charge
     parsed_output["multiplicity"] = multiplicity
@@ -98,7 +106,7 @@ def run_orca(input_filename,molecule,job,charge,multiplicity,debug_folder,orca_e
     print("Calculation pk",node.pk)
     print("properties pk",properties.pk)
     print(
-        f"{molecule} | {job['label']} | "
+        f"{molecule} | {job.label} | "
         f"{parsed_output['orca_keywords']} | "
         f"q={charge} m={multiplicity} | "
         f"energy={parsed_output['final_energy_hartree']} | "

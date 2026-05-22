@@ -34,7 +34,7 @@ jobs=[]
 for template in job_templates:
     jobs.extend(
         make_jobs(
-            template,
+            base_job,
             functionals,
             basis_sets,
 

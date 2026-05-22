@@ -10,7 +10,7 @@ def xyz_to_orca_inp(xyz_file,output_folder,job,charge,multiplicity):
 
     keywords=build_orca_keywords(job)   #orca keyword
     optional_blocks=build_orca_optional_blocks(job) #the optional block
-    label=job["label"]
+    label=job.label
 
     lines=xyz_file.read_text().splitlines()
     natoms=int(lines[0])
